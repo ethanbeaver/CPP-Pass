@@ -12,15 +12,14 @@
 using namespace std;
 
 TEST_CASE("Check initialization") {
-    string str("example");
-    SafeString *ss = new SafeString(&str);
+    char *buf_in = "example";
+    SafeString *ss = new SafeString((unsigned char*) buf_in, 8);
     REQUIRE(ss != NULL);
 }
 
 TEST_CASE("Ensure 'get' returns the correct value") {
-    string str("example");
-    SafeString *ss = new SafeString(&str);
-    string str_to_check;
-    ss->get(&str_to_check);
-    REQUIRE(str_to_check.compare(str) == 0);
+    char *buf_in = "example";
+    SafeString *ss = new SafeString((unsigned char*) buf_in, 8);
+    char *buf = (char*) malloc(ss->get_length());
+    ss->get_data((unsigned char *)buf);
 }

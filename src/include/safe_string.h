@@ -7,7 +7,7 @@
 
 #include <cstdlib>
 #include <functional>
-#include <string>
+#include <cstring>
 #include <vector>
 
 #include "openssl/rand.h"
@@ -18,13 +18,15 @@ using namespace std;
 
 class SafeString {
 public:
-    SafeString(string *s);
+    SafeString(unsigned char *s, unsigned len);
 
     SafeString(SafeString *s);
 
     ~SafeString();
 
-    void get(string *s);
+    void get_data(unsigned char *s);
+
+    unsigned get_length();
 
 private:
     unsigned char *p_data;
