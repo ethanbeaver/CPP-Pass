@@ -13,11 +13,11 @@ Storage::~Storage() {
 }
 
 bool Storage::get(unsigned int id, entry *e) {
-
+    return false;
 }
 
 bool Storage::set(unsigned int id, entry *e) {
-
+    return false;
 }
 
 void Storage::apply_key(SafeString key) {

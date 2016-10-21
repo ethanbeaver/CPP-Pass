@@ -8,11 +8,15 @@ Installation
 
 No matter how awesome this code is, all code is useless without being turned into the useless garbage that is machine code. Clearly being filed in a circular filing cabinet is not what we want. Here's how to avoid that dark fate.
 
-From the project root, run these commands on a Linux or OS X terminal.
+From the project root, run these commands on a Linux or Mac OS terminal.
 
     mkdir build && cd build
-    cmake ..
+    cmake -D /path/to/openssl ..
     make all
+
+If you are trying to make this on Windows, you are beyond help and should consider taking up underwater basket weaving.
+
+_Note: openssl can be found at `/usr/local/opt/openssl` on Mac OS._
 
 Testing
 -------
