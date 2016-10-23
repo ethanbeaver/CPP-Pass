@@ -1,0 +1,7 @@
+CPP-Pass:
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make all
+    - ctest
