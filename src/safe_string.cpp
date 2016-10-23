@@ -46,6 +46,9 @@ SafeString::SafeString(unsigned char *s, unsigned len) {
     EVP_CIPHER_CTX_free(ctx);
 }
 
+SafeString::SafeString(string s) : SafeString((unsigned char *) s.data(),
+                                              (unsigned) s.length()) {}
+
 SafeString::SafeString(SafeString *ss) {
     // TODO: Implement if I have time
 }
@@ -94,6 +97,18 @@ void SafeString::get_data(unsigned char *s, unsigned *len) {
     memset(plain, 0, this->data_len);
     free((void *) plain);
     EVP_CIPHER_CTX_free(ctx);
+}
+
+string SafeString::get_data() {
+    char *cp_plain = (char *) malloc(this->get_max_length());
+    memset(cp_plain, 0, this->data_len);
+    unsigned plain_len;
+    this->get_data((unsigned char *) cp_plain, &plain_len);
+
+    string str(cp_plain, plain_len);
+
+    free(cp_plain);
+    return str;
 }
 
 unsigned SafeString::get_max_length() {

@@ -9,6 +9,7 @@
 #include <functional>
 #include <cstring>
 #include <vector>
+#include <string>
 
 #include "openssl/rand.h"
 #include "openssl/evp.h"
@@ -30,6 +31,14 @@ public:
      * @param len Number of characters to store
      */
     SafeString(unsigned char *s, unsigned len);
+
+    /**
+     * For convenience, we allow developers to easily pass in regular C++
+     * strings. You're welcome.
+     *
+     * @param s
+     */
+    SafeString(string s);
 
     /**
      * <b>Not yet implemented!</b>
@@ -54,6 +63,14 @@ public:
      * `get_max_length()` which always overestimates the length.
      */
     void get_data(unsigned char *s, unsigned *len);
+
+    /**
+     * For convenience, we give access to strings. This is cross-compatable with
+     * the `get_data(...)` method.
+     *
+     * @return String representation of the stored data.
+     */
+    string get_data();
 
     /**
      * Estimates the plain text's actual length. This function will always
