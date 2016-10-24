@@ -48,7 +48,7 @@ TEST_CASE("Test create, get, set, delete, and list") {
     e.title = new SafeString("EntryTitle");
     e.username = new SafeString("EntryUsername");
     e.password = new SafeString("EntryPassword");
-    s->create(&e);
+    REQUIRE(s->create(&e));
     REQUIRE(e.id != 0); // Will fail 1 in 2^32 tests
 
     entries = s->list();
@@ -56,7 +56,7 @@ TEST_CASE("Test create, get, set, delete, and list") {
 
     entry e2;
     e2.id = e.id;
-    s->get(&e2);
+    REQUIRE(s->get(&e2));
     REQUIRE(e.title->get_data() == e2.title->get_data());
     REQUIRE(e.username->get_data() == e2.username->get_data());
     REQUIRE(e.password->get_data() == e2.password->get_data());
@@ -66,15 +66,15 @@ TEST_CASE("Test create, get, set, delete, and list") {
 
     free(e2.title);
     e2.title = new SafeString("UpdatedEntryTitle");
-    s->set(&e2);
-    s->get(&e2);
+    REQUIRE(s->set(&e2));
+    REQUIRE(s->get(&e2));
     REQUIRE(e.id == e2.id);
     REQUIRE(e2.title->get_data().compare("UpdatedEntryTitle") == 0);
 
     entries = s->list();
     REQUIRE(entries.size() == 1);
 
-    s->remove(&e2);
+    REQUIRE(s->remove(&e2));
 
     entries = s->list();
     REQUIRE(entries.size() == 0);
@@ -95,4 +95,35 @@ TEST_CASE("Check entry serialization and deserialization") {
     REQUIRE(e.title->get_data() == e2.title->get_data());
     REQUIRE(e.username->get_data() == e2.username->get_data());
     REQUIRE(e.password->get_data() == e2.password->get_data());
+}
+
+TEST_CASE("Try save and load operations on a non-empty safe") {
+    SafeString key(
+            (unsigned char *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
+            16);
+    Storage *s = new Storage(&key);
+
+    entry e;
+    e.id = 0;
+    e.title = new SafeString("ExampleTitle");
+    e.username = new SafeString("ExampleUsername");
+    e.password = new SafeString("ExamplePassword");
+    REQUIRE(s->create(&e));
+    REQUIRE(e.id != 0);
+
+    SafeString *ss = s->save();
+
+    Storage *s2 = new Storage(&key);
+    s2->load(ss);
+
+    entry e2;
+    e2.id = e.id;
+    REQUIRE(s2->get(&e2));
+
+    REQUIRE(e.id == e2.id);
+    REQUIRE(e.title->get_data() == e2.title->get_data());
+    REQUIRE(e.username->get_data() == e2.username->get_data());
+    REQUIRE(e.password->get_data() == e2.password->get_data());
+
+    free(ss);
 }

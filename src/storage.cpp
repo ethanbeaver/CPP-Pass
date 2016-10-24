@@ -101,6 +101,9 @@ void Storage::load(SafeString *ss) {
         throw new runtime_error("File verification failed");
     }
 
+    // If it decrypted and the digest still matched, we can be pretty sure it's
+    // an okay file. Treat it like it's properly formatted. Worst case is it
+    // segfaults.
     while (safe.length()) {
         // Get serialized entry length
         unsigned len;
@@ -117,7 +120,7 @@ void Storage::load(SafeString *ss) {
         this->entries.push_back(e);
 
         // Step to the next entry
-        s.erase(0, sizeof(len) + len);
+        safe.erase(0, sizeof(len) + len);
     }
 }
 
@@ -133,9 +136,10 @@ SafeString *Storage::save() {
         unsigned len = (unsigned) s.length();
         char ca_len[4];
         memcpy(ca_len, &len, sizeof(len));
+        string s_len(ca_len, sizeof(ca_len));
 
         // Dump to output stream
-        oss << ca_len;
+        oss << s_len;
         oss << s;
     }
 
