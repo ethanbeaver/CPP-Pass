@@ -5,25 +5,20 @@
 #include <iostream>
 #include "include/storage.h"
 
-Storage::Storage(SafeString *key) : Storage(key, NULL) {}
+Storage::Storage(SafeString *key) {
+    // Extract key into array
+    char *cp_key = (char *) malloc(key->get_max_length());
+    memset(cp_key, 0, key->get_max_length());
+    unsigned key_len;
+    key->get_data((unsigned char *) cp_key, &key_len);
 
-Storage::Storage(SafeString *key, SafeString *safe) {
-    if (key != NULL) {
-        // Extract key into array
-        char *cp_key = (char *) malloc(key->get_max_length());
-        memset(cp_key, 0, key->get_max_length());
-        unsigned key_len;
-        key->get_data((unsigned char *) cp_key, &key_len);
+    // Key size checking
+    if (key_len < sizeof(this->key))
+        throw new runtime_error("Provided key was too short");
 
-        // Key size checking
-        if (key_len < sizeof(this->key))
-            throw new runtime_error("Provided key was too short");
+    // Copy the first 32 bytes into the key (for 256-bit AES)
+    memcpy(this->key, cp_key, sizeof(this->key));
 
-        // Copy the first 16 bytes into the key
-        memcpy(this->key, cp_key, sizeof(this->key));
-    } else {
-        throw new runtime_error("Key must be provided");
-    }
 // TODO: Move this stuff into its own function and call it from `load` and `save`.
 //        // Decrypt the password safe ///////////////////////////////////////////
 //
@@ -74,9 +69,7 @@ Storage::~Storage() {
 }
 
 void Storage::load(SafeString *ss) {
-    string s = ss->get_data();
-
-    // TODO: put decryption here
+    string s = decrypt(this->key, ss)->get_data();
 
     // Ensure the length isn't entirely invalid
     if (s.length() < SHA512_DIGEST_LENGTH)
@@ -151,10 +144,8 @@ SafeString *Storage::save() {
     oss << string((char *) digest, SHA512_DIGEST_LENGTH);
     s = oss.str();
 
-    // TODO: put encryption here
-
     // Bundle and return the entries
-    return new SafeString(s);
+    return encrypt(this->key, new SafeString(s));
 }
 
 vector<entry> Storage::list() {
@@ -234,3 +225,12 @@ bool Storage::remove(entry *e) {
     return false;
 }
 
+SafeString *Storage::encrypt(unsigned char *key, SafeString *plain) {
+    // TODO: Implement this
+    return plain;
+}
+
+SafeString *Storage::decrypt(unsigned char *key, SafeString *cipher) {
+    // TODO: Implement this
+    return cipher;
+}

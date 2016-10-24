@@ -13,11 +13,6 @@
 #include "openssl/aes.h"
 #include "openssl/sha.h"
 
-struct list_entry {
-    unsigned int id;
-    SafeString title;
-};
-
 /**
  * Always initialize like `entry e = {};`. Failure to do so could result in a
  * segfault.
@@ -120,20 +115,13 @@ struct entry {
  */
 class Storage {
 public:
+
     /**
      * Create a new password safe.
      *
      * @param key Binary key data.
      */
     Storage(SafeString *key);
-
-    /**
-     * Open an existing password safe.
-     *
-     * @param key Binary key data.
-     * @param file Binary password safe data, or NULL for new safe.
-     */
-    Storage(SafeString *key, SafeString *file);
 
     /**
      * Safely clean up the password safe.
@@ -193,12 +181,18 @@ public:
      */
     SafeString *save();
 
+protected:
+
+    static SafeString *encrypt(unsigned char *key, SafeString *plain);
+
+    static SafeString *decrypt(unsigned char *key, SafeString *cipher);
+
 private:
 
     vector<entry> entries;
 
     // TODO: Keep this is a SafeString
-    unsigned char key[16];
+    unsigned char key[32];
 };
 
 #endif //CPP_PASS_STORAGE_H

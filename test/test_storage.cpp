@@ -12,21 +12,24 @@
 using namespace std;
 
 TEST_CASE("Check initialization") {
-    SafeString key(
-            (unsigned char *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
-            16);
-    Storage *s = new Storage(&key);
+    string s_key(
+            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
+            32);
+    SafeString *key = new SafeString(s_key);
+    Storage *s = new Storage(key);
     REQUIRE(s != NULL);
 }
 
 TEST_CASE("Try save and load operations on an empty safe") {
-    SafeString key(
-            (unsigned char *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
-            16);
-    Storage *s = new Storage(&key);
+    string s_key(
+            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
+            32);
+    SafeString *key = new SafeString(s_key);
+    Storage *s = new Storage(key);
+
     SafeString *ss = s->save();
 
-    Storage *s2 = new Storage(&key);
+    Storage *s2 = new Storage(key);
     s2->load(ss);
 
     free(ss);
@@ -35,10 +38,11 @@ TEST_CASE("Try save and load operations on an empty safe") {
 TEST_CASE("Test create, get, set, delete, and list") {
     vector<entry> entries;
 
-    SafeString key(
-            (unsigned char *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
-            16);
-    Storage *s = new Storage(&key);
+    string s_key(
+            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
+            32);
+    SafeString *key = new SafeString(s_key);
+    Storage *s = new Storage(key);
 
     entries = s->list();
     REQUIRE(entries.size() == 0);
@@ -98,10 +102,11 @@ TEST_CASE("Check entry serialization and deserialization") {
 }
 
 TEST_CASE("Try save and load operations on a non-empty safe") {
-    SafeString key(
-            (unsigned char *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
-            16);
-    Storage *s = new Storage(&key);
+    string s_key(
+            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
+            32);
+    SafeString *key = new SafeString(s_key);
+    Storage *s = new Storage(key);
 
     entry e;
     e.id = 0;
@@ -113,7 +118,7 @@ TEST_CASE("Try save and load operations on a non-empty safe") {
 
     SafeString *ss = s->save();
 
-    Storage *s2 = new Storage(&key);
+    Storage *s2 = new Storage(key);
     s2->load(ss);
 
     entry e2;
