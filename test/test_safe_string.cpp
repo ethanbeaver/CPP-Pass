@@ -48,6 +48,16 @@ TEST_CASE("String storage and retrieval") {
     REQUIRE(str_orig.compare(str_new) == 0);
 }
 
+TEST_CASE("String storage and retrieval of binary strings") {
+    string str_orig(
+            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f",
+            32);
+    SafeString *ss = new SafeString(str_orig);
+
+    string str_new = ss->get_data();
+    REQUIRE(str_orig.compare(str_new) == 0);
+}
+
 TEST_CASE("Store char array, retrieve string") {
     char buf_in[] = "example";
     SafeString *ss = new SafeString((unsigned char *) buf_in,
