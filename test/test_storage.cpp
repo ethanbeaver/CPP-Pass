@@ -11,19 +11,28 @@
 
 using namespace std;
 
+string s_key(
+        "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
+        32);
+
+class StorageProxy : Storage {
+public:
+    static SafeString *encrypt(unsigned char *key, SafeString *plain) {
+        return Storage::encrypt(key, plain);
+    }
+
+    static SafeString *decrypt(unsigned char *key, SafeString *cipher) {
+        return Storage::decrypt(key, cipher);
+    }
+};
+
 TEST_CASE("Check initialization") {
-    string s_key(
-            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
-            32);
     SafeString *key = new SafeString(s_key);
     Storage *s = new Storage(key);
     REQUIRE(s != NULL);
 }
 
 TEST_CASE("Try save and load operations on an empty safe") {
-    string s_key(
-            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
-            32);
     SafeString *key = new SafeString(s_key);
     Storage *s = new Storage(key);
 
@@ -38,9 +47,6 @@ TEST_CASE("Try save and load operations on an empty safe") {
 TEST_CASE("Test create, get, set, delete, and list") {
     vector<entry> entries;
 
-    string s_key(
-            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
-            32);
     SafeString *key = new SafeString(s_key);
     Storage *s = new Storage(key);
 
@@ -102,9 +108,6 @@ TEST_CASE("Check entry serialization and deserialization") {
 }
 
 TEST_CASE("Try save and load operations on a non-empty safe") {
-    string s_key(
-            "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
-            32);
     SafeString *key = new SafeString(s_key);
     Storage *s = new Storage(key);
 
@@ -131,4 +134,17 @@ TEST_CASE("Try save and load operations on a non-empty safe") {
     REQUIRE(e.password->get_data() == e2.password->get_data());
 
     free(ss);
+}
+
+TEST_CASE("Try encryption and decryption") {
+    unsigned char ca_key[s_key.length()];
+    memcpy(ca_key, s_key.data(), sizeof(ca_key));
+
+    SafeString *plain = new SafeString("asdf");
+    SafeString *cipher = StorageProxy::encrypt((unsigned char *) ca_key, plain);
+    SafeString *replain = StorageProxy::decrypt((unsigned char *) ca_key,
+                                                cipher);
+
+    REQUIRE(plain->get_data().compare(cipher->get_data()) != 0);
+    REQUIRE(plain->get_data().compare(replain->get_data()) == 0);
 }

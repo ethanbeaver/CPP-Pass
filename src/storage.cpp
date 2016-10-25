@@ -182,11 +182,82 @@ bool Storage::remove(entry *e) {
 }
 
 SafeString *Storage::encrypt(unsigned char *key, SafeString *plain) {
-    // TODO: Implement this
-    return plain;
+    char iv[AES_BLOCK_SIZE];
+    memset(iv, 0, AES_BLOCK_SIZE);
+
+    string plain_text = plain->get_data();
+    unsigned plain_text_len = (unsigned) plain_text.length();
+    char *cipher_text = (char *) malloc(
+            plain->get_max_length() + AES_BLOCK_SIZE);
+
+    EVP_CIPHER_CTX *ctx;
+
+    int len, cipher_text_len;
+
+    if (!(ctx = EVP_CIPHER_CTX_new()))
+        throw new runtime_error("Unable to initialize context");
+
+    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key,
+                           (unsigned char *) iv) != 1)
+        throw new runtime_error("Unable to initialize encryption");
+
+    if (EVP_EncryptUpdate(ctx, (unsigned char *) cipher_text, &len,
+                          (unsigned char *) plain_text.data(),
+                          plain_text_len) != 1)
+        throw new runtime_error("Encryption update failed");
+    cipher_text_len = len;
+
+    if (EVP_EncryptFinal_ex(ctx, (unsigned char *) cipher_text + len, &len)
+        != 1)
+        throw new runtime_error("Encryption finalization failed");
+    cipher_text_len += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+
+    SafeString *ss = new SafeString((unsigned char *) cipher_text,
+                                    (unsigned) cipher_text_len);
+
+    free(cipher_text);
+
+    return ss;
 }
 
 SafeString *Storage::decrypt(unsigned char *key, SafeString *cipher) {
-    // TODO: Implement this
-    return cipher;
+    char iv[AES_BLOCK_SIZE];
+    memset(iv, 0, AES_BLOCK_SIZE);
+
+    string cipher_text = cipher->get_data();
+    unsigned cipher_text_len = (unsigned) cipher_text.length();
+    char *plain_text = (char *) malloc(
+            cipher->get_max_length() + AES_BLOCK_SIZE);
+
+    EVP_CIPHER_CTX *ctx;
+
+    int len, plain_text_len;
+
+    /* Create and initialise the context */
+    if (!(ctx = EVP_CIPHER_CTX_new()))
+        throw new runtime_error("Unable to initialize context");
+
+    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key,
+                           (unsigned char *) iv) != 1)
+        throw new runtime_error("Unable to initialize decryption");
+
+    if (EVP_DecryptUpdate(ctx, (unsigned char *) plain_text, &len,
+                          (unsigned char *) cipher_text.data(),
+                          cipher_text_len) != 1)
+        throw new runtime_error("Decryption update failed");
+    plain_text_len = len;
+
+    if (EVP_DecryptFinal_ex(ctx, (unsigned char *) plain_text + len, &len) != 1)
+        throw new runtime_error("Decryption finalization failed");
+    plain_text_len += len;
+
+    SafeString *ss = new SafeString((unsigned char *) plain_text,
+                                    (unsigned) plain_text_len);
+
+    EVP_CIPHER_CTX_free(ctx);
+    free(plain_text);
+
+    return ss;
 }
