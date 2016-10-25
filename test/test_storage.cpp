@@ -17,6 +17,8 @@ string s_key(
 
 class StorageProxy : Storage {
 public:
+    StorageProxy(SafeString *key) : Storage(key) {}
+
     static SafeString *encrypt(unsigned char *key, SafeString *plain) {
         return Storage::encrypt(key, plain);
     }
