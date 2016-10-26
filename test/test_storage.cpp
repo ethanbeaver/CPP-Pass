@@ -55,13 +55,9 @@ TEST_CASE("Test create, get, set, delete, and list") {
     entries = s->list();
     REQUIRE(entries.size() == 0);
 
-    entry e;
-    e.id = 0;
-    e.title = new SafeString("EntryTitle");
-    e.username = new SafeString("EntryUsername");
-    e.password = new SafeString("EntryPassword");
+    entry e("EntryTitle", "EntryUsername", "EntryPassword");
     REQUIRE(s->create(&e));
-    REQUIRE(e.id != 0); // Will fail 1 in 2^32 tests
+    REQUIRE(e.id != 0); // Will erroneously fail 1 in 2^32 tests
 
     entries = s->list();
     REQUIRE(entries.size() == 1);
@@ -76,12 +72,11 @@ TEST_CASE("Test create, get, set, delete, and list") {
     entries = s->list();
     REQUIRE(entries.size() == 1);
 
-    free(e2.title);
     e2.title = new SafeString("UpdatedEntryTitle");
     REQUIRE(s->set(&e2));
     REQUIRE(s->get(&e2));
     REQUIRE(e.id == e2.id);
-    REQUIRE(e2.title->get_data().compare("UpdatedEntryTitle") == 0);
+    REQUIRE(e2.title->get_data() == "UpdatedEntryTitle");
 
     entries = s->list();
     REQUIRE(entries.size() == 1);
@@ -147,6 +142,6 @@ TEST_CASE("Try encryption and decryption") {
     SafeString *replain = StorageProxy::decrypt((unsigned char *) ca_key,
                                                 cipher);
 
-    REQUIRE(plain->get_data().compare(cipher->get_data()) != 0);
-    REQUIRE(plain->get_data().compare(replain->get_data()) == 0);
+    REQUIRE(plain->get_data() != cipher->get_data());
+    REQUIRE(plain->get_data() == replain->get_data());
 }
