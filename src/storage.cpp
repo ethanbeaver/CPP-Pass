@@ -18,54 +18,10 @@ Storage::Storage(SafeString *key) {
 
     // Copy the first 32 bytes into the key (for 256-bit AES)
     memcpy(this->key, cp_key, sizeof(this->key));
-
-// TODO: Move this stuff into its own function and call it from `load` and `save`.
-//        // Decrypt the password safe ///////////////////////////////////////////
-//
-//        char *cp_safe = (char *) malloc(safe->get_max_length());
-//        memset(cp_safe, 0, safe->get_max_length());
-//        unsigned safe_len;
-//        safe->get_data((unsigned char *) cp_safe, &safe_len);
-//
-//        // Assemble a decryption object
-//        EVP_CIPHER_CTX *ctx;
-//        if (!(ctx = EVP_CIPHER_CTX_new()))
-//            throw new runtime_error(
-//                    "Abstract cipher object failed to initialize");
-//        if (EVP_DecryptInit(ctx, EVP_aes_128_cbc(), this->key, this->key) != 1)
-//            throw new runtime_error(
-//                    "AES decryption object failed to initialize");
-//
-//        // Build a temporary container for the plain text
-//        unsigned char *plain = (unsigned char *) malloc(safe_len);
-//        if (plain == NULL)
-//            throw new runtime_error(
-//                    "Unable to allocate extra memory for plain text");
-//        memset(plain, 0, safe_len);
-//
-//        // Decrypt the cipher text
-//        int plain_len_update, plain_len_final = 0;
-//        if (EVP_DecryptUpdate(ctx, plain, &plain_len_update,
-//                              (const unsigned char *) cp_safe,
-//                              (int) safe_len) != 1)
-//            throw new runtime_error("Encryption update failed");
-//        if (EVP_DecryptFinal_ex(ctx, plain + plain_len_update,
-//                                &plain_len_final) !=
-//            1)
-//            throw new runtime_error("Encryption finalization failed");
-//        int plain_len = plain_len_update + plain_len_final;
-//
-//        // Build decrypted string objects
-//        string s_plain((char *) plain, (unsigned) plain_len);
-//
-//        // Clean up decryption mechanics
-//        memset(plain, 0, safe_len);
-//        free((void *) plain);
-//        EVP_CIPHER_CTX_free(ctx);
 }
 
 Storage::~Storage() {
-
+    memset(this->key, 0, sizeof(this->key));
 }
 
 void Storage::load(SafeString *ss) {
@@ -226,11 +182,82 @@ bool Storage::remove(entry *e) {
 }
 
 SafeString *Storage::encrypt(unsigned char *key, SafeString *plain) {
-    // TODO: Implement this
-    return plain;
+    char iv[AES_BLOCK_SIZE];
+    memset(iv, 0, AES_BLOCK_SIZE);
+
+    string plain_text = plain->get_data();
+    unsigned plain_text_len = (unsigned) plain_text.length();
+    char *cipher_text = (char *) malloc(
+            plain->get_max_length() + AES_BLOCK_SIZE);
+
+    EVP_CIPHER_CTX *ctx;
+
+    int len, cipher_text_len;
+
+    if (!(ctx = EVP_CIPHER_CTX_new()))
+        throw new runtime_error("Unable to initialize context");
+
+    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key,
+                           (unsigned char *) iv) != 1)
+        throw new runtime_error("Unable to initialize encryption");
+
+    if (EVP_EncryptUpdate(ctx, (unsigned char *) cipher_text, &len,
+                          (unsigned char *) plain_text.data(),
+                          plain_text_len) != 1)
+        throw new runtime_error("Encryption update failed");
+    cipher_text_len = len;
+
+    if (EVP_EncryptFinal_ex(ctx, (unsigned char *) cipher_text + len, &len)
+        != 1)
+        throw new runtime_error("Encryption finalization failed");
+    cipher_text_len += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+
+    SafeString *ss = new SafeString((unsigned char *) cipher_text,
+                                    (unsigned) cipher_text_len);
+
+    free(cipher_text);
+
+    return ss;
 }
 
 SafeString *Storage::decrypt(unsigned char *key, SafeString *cipher) {
-    // TODO: Implement this
-    return cipher;
+    char iv[AES_BLOCK_SIZE];
+    memset(iv, 0, AES_BLOCK_SIZE);
+
+    string cipher_text = cipher->get_data();
+    unsigned cipher_text_len = (unsigned) cipher_text.length();
+    char *plain_text = (char *) malloc(
+            cipher->get_max_length() + AES_BLOCK_SIZE);
+
+    EVP_CIPHER_CTX *ctx;
+
+    int len, plain_text_len;
+
+    /* Create and initialise the context */
+    if (!(ctx = EVP_CIPHER_CTX_new()))
+        throw new runtime_error("Unable to initialize context");
+
+    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key,
+                           (unsigned char *) iv) != 1)
+        throw new runtime_error("Unable to initialize decryption");
+
+    if (EVP_DecryptUpdate(ctx, (unsigned char *) plain_text, &len,
+                          (unsigned char *) cipher_text.data(),
+                          cipher_text_len) != 1)
+        throw new runtime_error("Decryption update failed");
+    plain_text_len = len;
+
+    if (EVP_DecryptFinal_ex(ctx, (unsigned char *) plain_text + len, &len) != 1)
+        throw new runtime_error("Decryption finalization failed");
+    plain_text_len += len;
+
+    SafeString *ss = new SafeString((unsigned char *) plain_text,
+                                    (unsigned) plain_text_len);
+
+    EVP_CIPHER_CTX_free(ctx);
+    free(plain_text);
+
+    return ss;
 }
