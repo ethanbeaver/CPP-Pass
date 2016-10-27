@@ -5,6 +5,6 @@ target_link_libraries(SafeString ${OPENSSL_LIBRARIES})
 
 target_link_libraries(Storage SafeString)
 
-add_executable(CPP-Pass main.cpp)
+add_executable(CPP-Pass main.cpp include/disk_storage.h disk_storage.cpp)
 target_link_libraries(CPP-Pass Storage)
 target_link_libraries(CPP-Pass SafeString)
