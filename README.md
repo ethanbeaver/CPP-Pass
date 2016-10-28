@@ -41,7 +41,7 @@ From the project root, run these commands on a Linux or Mac OS terminal.
     cmake ..                 # generate the makefiles
     make all                 # compile code
 
-If `cmake` fails, try `cmake -D /path/to/openssl ..`.
+If `cmake` fails, try `cmake -D OPENSSL_ROOT_DIR=/path/to/openssl ..`.
 
 **Important:** Windows is _not_ supported. It may work on Windows, but nobody bothered to install the dependencies and test everything. Good luck.
 
