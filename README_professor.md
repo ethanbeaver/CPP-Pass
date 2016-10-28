@@ -16,6 +16,8 @@ But if you really want to get picky, there is one tiny security issue. AES requi
 
 To make the safe harder to brute force, we could simply randomize the IV and tack it onto the front of the encrypted file. Any sort of rainbow tables would become useless.
 
+Other attack vectors are not within the scope of this project, such as keyloggers and screen captures. It is very difficult to defend against these kinds of attacks at the userland level. Once a user has access to the machine itself, it's much tougher to protect against intrusion.
+
 Broadly speaking, this program is quite sturdy. Until an error in AES-256 is found or released, we can safely assume this key file cannot be broken in a matter of days or weeks, or probably even years, or maybe even millennia.
 
 All secure backend code has been tested using unit tests. While no unit test set is ever 100% complete, it ensures data going in and coming out is compatible and can at least pretend to be safe. Analysis of the password safe file shows that passwords are not human-readable.
