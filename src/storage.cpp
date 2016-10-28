@@ -290,3 +290,17 @@ bool Storage::search(entry *e, SafeString *title) {
 
     return false;
 }
+
+void Storage::dump_hex(string *s) {
+    char const hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
+                                '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+    for (int i = 0; i < s->length(); i++) {
+        char const byte = (*s)[i];
+
+        cout << hex_chars[(byte & 0xF0) >> 4];
+        cout << hex_chars[(byte & 0x0F) >> 0];
+        cout << ' ';
+    }
+    cout << endl;
+}

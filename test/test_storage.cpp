@@ -138,6 +138,26 @@ TEST_CASE("Try save and load operations on a non-empty safe") {
     free(ss);
 }
 
+TEST_CASE("Try save and load operations on a rather large, non-empty safe") {
+    SafeString *key = new SafeString(s_key);
+    Storage *s = new Storage(key);
+
+    unsigned i = 0;
+    for (i = 0; i < 10000; i++) {
+        entry e("Title", "Username", "Password");
+        s->create(&e);
+    }
+
+    REQUIRE(s->list().size() == i);
+
+    SafeString *ss = s->save();
+
+    Storage *s2 = new Storage(key);
+    s2->load(ss);
+
+    REQUIRE(s2->list().size() == i);
+}
+
 TEST_CASE("Try encryption and decryption") {
     unsigned char ca_key[s_key.length()];
     memcpy(ca_key, s_key.data(), sizeof(ca_key));
@@ -154,4 +174,8 @@ TEST_CASE("Try encryption and decryption") {
 TEST_CASE("Get a new key") {
     SafeString *new_key = Storage::generate_key();
     REQUIRE(new_key->get_data().length() == 32);
+}
+
+TEST_CASE("Demonstrate debug hex") {
+    Storage::dump_hex(&s_key);
 }

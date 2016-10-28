@@ -106,6 +106,13 @@ public:
      */
     static SafeString *generate_key();
 
+    /**
+     * Used only as a debug tool. Never to be used in production.
+     *
+     * @param s
+     */
+    static void dump_hex(string *s);
+
 protected:
 
     /**
