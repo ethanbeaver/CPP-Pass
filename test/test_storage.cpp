@@ -56,6 +56,7 @@ TEST_CASE("Test create, get, set, delete, and list") {
     REQUIRE(entries.size() == 0);
 
     entry e("EntryTitle", "EntryUsername", "EntryPassword");
+    e.id = 0;
     REQUIRE(s->create(&e));
     REQUIRE(e.id != 0); // Will erroneously fail 1 in 2^32 tests
 
@@ -80,6 +81,10 @@ TEST_CASE("Test create, get, set, delete, and list") {
 
     entries = s->list();
     REQUIRE(entries.size() == 1);
+
+    e2.id = (unsigned) -1;
+    REQUIRE(s->search(&e2, new SafeString("Title")));
+    REQUIRE(e.id == e2.id);
 
     REQUIRE(s->remove(&e2));
 
@@ -144,4 +149,9 @@ TEST_CASE("Try encryption and decryption") {
 
     REQUIRE(plain->get_data() != cipher->get_data());
     REQUIRE(plain->get_data() == replain->get_data());
+}
+
+TEST_CASE("Get a new key") {
+    SafeString *new_key = Storage::generate_key();
+    REQUIRE(new_key->get_data().length() == 32);
 }

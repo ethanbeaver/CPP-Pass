@@ -261,3 +261,34 @@ SafeString *Storage::decrypt(unsigned char *key, SafeString *cipher) {
 
     return ss;
 }
+
+SafeString *Storage::generate_key() {
+    // Setup
+    unsigned key_len = 32;
+    unsigned char *local_key = (unsigned char *) malloc(key_len);
+
+    // Get cryptographically-random bytes
+    RAND_bytes(local_key, key_len);
+
+    // Convert to SafeString and deallocate memory
+    SafeString *ss = new SafeString(local_key, key_len);
+    free(local_key);
+
+    return ss;
+}
+
+bool Storage::search(entry *e, SafeString *title) {
+    for (unsigned i = 0; i < this->entries.size(); i++) {
+        // See if there's a match in the title
+        unsigned long title_match = this->entries[i].title->get_data()
+                .find(title->get_data());
+
+        // Copy the data into the entry if there's a match
+        if (title_match != string::npos) {
+            memcpy(e, &this->entries[i], sizeof(entry));
+            return true;
+        }
+    }
+
+    return false;
+}
