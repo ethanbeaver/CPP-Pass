@@ -33,16 +33,20 @@ Wrote all documentation and security-related code, such as Storage and SafeStrin
 
 **Ethan Beaver:**
 
-   I wrote the entirety of main.cpp, disk_storage.cpp, and disk_storage.h. So, basically I wrote the User Interface and the writing to and from files. Functionality of each of the files are as follows:
-   main:
-    - Parsing of user inputs from the command line.
-    - Redirecting to appropriate functions
-   disk_storage:
-    - Securely writing to and from files
-    - User interface options
+I wrote the entirety of main.cpp, disk_storage.cpp, and disk_storage.h. So, basically I wrote the User Interface and the writing to and from files. Functionality of each of the files are as follows:
+
+_main_:
+
+- Parsing of user inputs from the command line.
+- Redirecting to appropriate functions
+
+_disk_storage_:
+
+- Securely writing to and from files
+- User interface options
 
 **Quillan Jacobson:**
     
--Assisted in conceiving project idea
--Reviewed written code and fucntion
--Offered what support i could when writing
+- Assisted in conceiving project idea
+- Reviewed written code and fucntion
+- Offered what support i could when writing
