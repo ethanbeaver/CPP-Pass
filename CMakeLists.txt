@@ -16,12 +16,3 @@ include_directories(${TCLAP_INCLUDE_DIRS})
 
 # Add sources
 add_subdirectory(src)
-
-# Add tests
-if (EXISTS test)
-    enable_testing()
-    add_subdirectory(test)
-    MESSAGE("Enabled testing!")
-else ()
-    MESSAGE("Testing has been disabled.")
-endif ()
