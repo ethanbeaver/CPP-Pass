@@ -29,6 +29,8 @@ Contributions
 
 **Andy Russell:**
 
+Wrote all documentation and security-related code, such as Storage and SafeString. Also set up environment and IDE settings.
+
 **Ethan Beaver:**
 
 **Quillan Jacobson:**
