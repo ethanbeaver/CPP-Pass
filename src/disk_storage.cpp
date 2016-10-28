@@ -40,6 +40,7 @@ void diskStorage::retrievePasswords() {
     else{
         cout << "Invalid index!\n";
     }
+    return;
 }
 
 void diskStorage::inputPasswords() {
@@ -62,6 +63,7 @@ void diskStorage::inputPasswords() {
 
     //Storage *storage;
     storage->create(&site);
+    return;
 }
 
 bool diskStorage::writeToFile(string passPath) {
@@ -74,6 +76,7 @@ bool diskStorage::writeToFile(string passPath) {
     passOut.open(passPath, ios::out | ios::binary);
     passOut.write( (char*)data.data(), data.length());
     passOut.close();
+    return true;
 }
 
 bool diskStorage::readFromFile(string keyPath, string passPath){
