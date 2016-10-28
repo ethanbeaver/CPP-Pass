@@ -20,15 +20,17 @@ int main(int argc, char** argv) {
         diskStorage d;
         // Get the value parsed by each arg, depending on which are set.
         if(GenArg.isSet()) {
-            string keyGenPath = GenArg.getValue();
-            d.genKey(keyGenPath);
+            const char *keyGenPath = GenArg.getValue().c_str();
+            char *c = const_cast<char *>(keyGenPath);
+            d.genKey(c);
         }else if(PassArg.isSet() && KeyArg.isSet()){
-            string keyPath = KeyArg.getValue();
-            string passPath = PassArg.getValue();
-
-            if(d.readFromFile(keyPath, passPath)) {
+            const char *keyPath = KeyArg.getValue().c_str();
+            const char *passPath = PassArg.getValue().c_str();
+            char *a = const_cast<char *>(keyPath);
+            char *b = const_cast<char *>(passPath);
+            if(d.readFromFile(a, b)) {
                 d.Menu();
-                d.writeToFile(passPath);
+                d.writeToFile(b);
             }else{
                 cerr << "Operations failed. No changes were made" << endl;
             }

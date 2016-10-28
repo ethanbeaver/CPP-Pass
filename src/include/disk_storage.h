@@ -26,19 +26,19 @@ public:
      * Write the password safe to a file
      *
      */
-    bool writeToFile(string passPath);
+    bool writeToFile(char *passPath);
 
     /**
      * Read a password safe from a file
      *
      */
-    bool readFromFile(string keyPath, string passPath);
+    bool readFromFile(char *keyPath, char *passPath);
 
     /**
      * Generate a key file for the user to use!
      *
      */
-    void genKey(string keyPath);
+    void genKey(char *keyPath);
 
     void Menu();
 private:

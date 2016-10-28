@@ -7,7 +7,11 @@
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <sstream>
+#include <string>
+#include <bitset>
 #include <tclap/CmdLine.h>
 //#include <search.h>
 
@@ -61,29 +65,33 @@ void diskStorage::inputPasswords() {
     site.username = new SafeString(user);
     site.password = new SafeString(pass);*/
 
-    //Storage *storage;
     storage->create(&site);
     return;
 }
 
-bool diskStorage::writeToFile(string passPath) {
+bool diskStorage::writeToFile(char *passPath) {
     //Write the password safe that's in memory to a file on the hard disk as well as the key
-    //Storage *storage;
     SafeString *passData = storage->save();
     string data = passData->get_data();
-    ofstream passOut;
+    //const char *buffer = data.c_str();
+    /*ofstream passOut;
     remove(passPath.c_str());
     passOut.open(passPath, ios::out | ios::binary);
     passOut.write( (char*)data.data(), data.length());
-    passOut.close();
+    passOut.close();*/
+
+    FILE * pFile;
+    pFile = fopen(passPath, "wb");
+    fwrite (data.c_str() , sizeof(char), data.length(), pFile);
+    fclose (pFile);
     return true;
 }
 
-bool diskStorage::readFromFile(string keyPath, string passPath){
+bool diskStorage::readFromFile(char *keyPath, char *passPath){
     //Read a password safe that's in a file into memory
 
 
-    ifstream key (keyPath,fstream::binary);
+    /*ifstream key (keyPath,fstream::binary);
     if(!key.good()) {
         cerr << "Invalid key file!" << endl;
         return false;
@@ -92,11 +100,57 @@ bool diskStorage::readFromFile(string keyPath, string passPath){
     int length2 = key.tellg();
     key.seekg(0, key.beg);
     char *buffer2 = new char[length2];
-    key.read(buffer2, length2);
+    key.read(buffer2, length2);*/
+
+    FILE * kFile;
+    long lSize;
+    char* buffer2;
+    size_t result;
+
+    kFile = fopen(keyPath, "rb");
+    if(kFile == NULL) {
+        cerr << "Invalid key file!" << endl;
+        return false;
+    }
+    fseek (kFile , 0 , SEEK_END);
+    lSize = ftell (kFile);
+    rewind (kFile);
+
+    buffer2 = (char*) malloc (sizeof(char)*lSize);
+    if (buffer2 == NULL) {fputs ("Memory error",stderr); exit (2);}
+
+    result = fread (buffer2,1,lSize,kFile);
+    if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
+
+
+
     SafeString *keyFile = new SafeString((unsigned char *) buffer2, (unsigned int) strlen(buffer2));
 
     storage = new Storage(keyFile);
-    ifstream safe (passPath,fstream::binary);
+
+    FILE * pFile;
+    long lSize1;
+    char* buffer1;
+    size_t result1;
+
+    pFile = fopen(passPath, "rb");
+    if(pFile == NULL) {
+        cout << "Invalid file! Creating new password file...\n";
+        return true;
+    }
+    fseek (pFile , 0 , SEEK_END);
+    lSize1 = ftell (pFile);
+    rewind (pFile);
+
+    buffer1 = (char*) malloc (sizeof(char)*lSize1);
+    if (buffer1 == NULL) {fputs ("Memory error",stderr); exit (2);}
+
+    result1 = fread (buffer1,1,lSize1,pFile);
+    if (result1 != lSize1) {fputs ("Reading error",stderr); exit (3);}
+    
+    
+
+    /*ifstream safe (passPath,fstream::binary);
     if(!safe.good()) {
         cerr << "Invalid file! Creating new password file...\n";
         return true;
@@ -105,19 +159,25 @@ bool diskStorage::readFromFile(string keyPath, string passPath){
     int length1 = safe.tellg();
     safe.seekg(0, safe.beg);
     char *buffer1 = new char[length1];
-    safe.read(buffer1, length1);
+    safe.read(buffer1, length1);*/
+
     SafeString *passFile = new SafeString((unsigned char *)buffer1, (unsigned int)strlen(buffer1));
     storage->load(passFile);
     return true;
 }
 
-void diskStorage::genKey(string keyPath){
+void diskStorage::genKey(char *keyPath){
     SafeString *key = Storage::generate_key();
     string keyData = key->get_data();
-    ofstream passKey;
+    /*ofstream passKey;
     passKey.open(keyPath, ios::out | ios::binary);
     passKey.write( (char*)keyData.data(), keyData.length());
-    passKey.close();
+    passKey.close();*/
+
+    FILE * pFile;
+    pFile = fopen(keyPath, "wb");
+    fwrite (keyData.c_str() , sizeof(char), sizeof(keyData.c_str()), pFile);
+    fclose (pFile);
     return;
 }
 
@@ -135,7 +195,7 @@ void diskStorage::Menu(){
                 diskStorage::inputPasswords();
                 break;
             default:
-                "Goodbye!\n";
+                cout << "Goodbye!\n";
                 break;
         }
     }while(choice!=0);
