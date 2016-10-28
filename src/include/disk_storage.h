@@ -6,44 +6,34 @@
 #define CPP_PASS_DISK_STORAGE_H
 
 #endif //CPP_PASS_DISK_STORAGE_H
+#include "safe_string.h"
+#include "storage.h"
 
 class diskStorage {
 public:
 
-    
-    userInterface();
     /**
-     * Display the passwords! If you can...
+     * Retrieve Passwords
      */
-    displayPasswords(string path);
+    string retrievePasswords(string keyPath, string passPath);
 
     /**
      * Input Passwords
      */
-    inputPasswords();
+    void inputPasswords(SafeString *pass);
 
     /**
      * Write the password safe to a file
      *
      */
-    writeToFile(string path);
+    bool writeToFile(Storage *storage, string passPath);
 
     /**
      * Read a password safe from a file
      *
      */
-    readFromFile(string path);
+    bool readFromFile(string keyPath, string passPath);
 
-    /**
-     * Write the key to a file
-     */
-
-    writeKeyFile(string path);
-
-    /**
-     * Load a key file to decrypt the password file
-     *
-     */
-    loadKeyFile(string path);
-
+private:
+    Storage *storage;
 };
