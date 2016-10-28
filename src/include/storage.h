@@ -91,6 +91,21 @@ public:
      */
     SafeString *save();
 
+    /**
+     * Search through the titles and username. Returns the first match.
+     *
+     * @param e
+     * @return True on entry found, false on entry not found.
+     */
+    bool search(entry *e, SafeString *title);
+
+    /**
+     * Generate a new random key. Output should be cryptographically random.
+     *
+     * @return
+     */
+    static SafeString *generate_key();
+
 protected:
 
     /**
