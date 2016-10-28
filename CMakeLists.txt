@@ -18,5 +18,10 @@ include_directories(${TCLAP_INCLUDE_DIRS})
 add_subdirectory(src)
 
 # Add tests
-enable_testing()
-add_subdirectory(test)
+if (EXISTS test)
+    enable_testing()
+    add_subdirectory(test)
+    MESSAGE("Enabled testing!")
+else ()
+    MESSAGE("Testing has been disabled.")
+endif ()
