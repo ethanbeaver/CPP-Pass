@@ -23,3 +23,12 @@ Broadly speaking, this program is quite sturdy. Until an error in AES-256 is fou
 All secure backend code has been tested using unit tests. While no unit test set is ever 100% complete, it ensures data going in and coming out is compatible and can at least pretend to be safe. Analysis of the password safe file shows that passwords are not human-readable.
 
 However, if an attacker were to somehow break in, they would have access to all passwords stored in the safe. Passwords could include bank logins, work accounts, or credit card information.
+
+Contributions
+-------------
+
+**Andy Russell:**
+
+**Ethan Beaver:**
+
+**Quillan Jacobson:**
