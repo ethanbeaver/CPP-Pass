@@ -42,3 +42,7 @@ Wrote all documentation and security-related code, such as Storage and SafeStrin
     - User interface options
 
 **Quillan Jacobson:**
+    
+-Assisted in conceiving project idea
+-Reviewed written code and fucntion
+-Offered what support i could when writing
