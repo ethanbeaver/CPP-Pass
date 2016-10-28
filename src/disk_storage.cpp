@@ -49,7 +49,7 @@ void diskStorage::retrievePasswords() {
             case 2:
                 cout << "Enter the number corresponding to the entry you'd like to see: ";
                 cin >> select;
-                if (select < entries.size() && select>0) {
+                if (select < entries.size()) {
                     cout << "Title: " << entries[select].title->get_data() << endl;
                     cout << "Username: " << entries[select].username->get_data() << endl;
                     cout << "Password: " << entries[select].password->get_data() << endl;
