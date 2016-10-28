@@ -40,3 +40,7 @@ Contributions
     - User interface options
 
 **Quillan Jacobson:**
+    
+-Assisted in conceiving project idea
+-Reviewed written code and fucntion
+-Offered what support i could when writing
