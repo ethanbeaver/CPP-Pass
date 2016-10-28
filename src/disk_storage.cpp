@@ -35,13 +35,12 @@ void diskStorage::retrievePasswords() {
     cout << "Enter the number corresponding of the entry you'd like to see: ";
     unsigned int select;
     cin >> select;
-    if(select < entries.size()) {
+    if (select < entries.size()) {
         cout << "Title: " << entries[select].title->get_data() << endl;
         cout << "Username: " << entries[select].username->get_data() << endl;
         cout << "Password: " << entries[select].password->get_data() << endl;
 
-    }
-    else{
+    } else {
         cout << "Invalid index!\n";
     }
     return;
@@ -80,108 +79,92 @@ bool diskStorage::writeToFile(char *passPath) {
     passOut.write( (char*)data.data(), data.length());
     passOut.close();*/
 
-    FILE * pFile;
+    FILE *pFile;
     pFile = fopen(passPath, "wb");
-    fwrite (data.c_str() , sizeof(char), data.length(), pFile);
-    fclose (pFile);
+    fwrite(data.c_str(), sizeof(char), data.length(), pFile);
+    fclose(pFile);
     return true;
 }
 
-bool diskStorage::readFromFile(char *keyPath, char *passPath){
+bool diskStorage::readFromFile(char *keyPath, char *passPath) {
     //Read a password safe that's in a file into memory
 
-
-    /*ifstream key (keyPath,fstream::binary);
-    if(!key.good()) {
-        cerr << "Invalid key file!" << endl;
-        return false;
-    }
-    key.seekg(0, key.end);
-    int length2 = key.tellg();
-    key.seekg(0, key.beg);
-    char *buffer2 = new char[length2];
-    key.read(buffer2, length2);*/
-
-    FILE * kFile;
+    FILE *kFile;
     long lSize;
-    char* buffer2;
+    char *buffer2;
     size_t result;
 
     kFile = fopen(keyPath, "rb");
-    if(kFile == NULL) {
+    if (kFile == NULL) {
         cerr << "Invalid key file!" << endl;
         return false;
     }
-    fseek (kFile , 0 , SEEK_END);
-    lSize = ftell (kFile);
-    rewind (kFile);
+    fseek(kFile, 0, SEEK_END);
+    lSize = ftell(kFile);
+    rewind(kFile);
 
-    buffer2 = (char*) malloc (sizeof(char)*lSize);
-    if (buffer2 == NULL) {fputs ("Memory error",stderr); exit (2);}
+    buffer2 = (char *) malloc(sizeof(char) * lSize);
+    if (buffer2 == NULL) {
+        fputs("Memory error", stderr);
+        exit(2);
+    }
 
-    result = fread (buffer2,1,lSize,kFile);
-    if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
+    result = fread(buffer2, 1, lSize, kFile);
+    if (result != lSize) {
+        fputs("Reading error", stderr);
+        exit(3);
+    }
 
 
-
-    SafeString *keyFile = new SafeString((unsigned char *) buffer2, (unsigned int) strlen(buffer2));
+    SafeString *keyFile = new SafeString((unsigned char *) buffer2,
+                                         (unsigned int) lSize);
 
     storage = new Storage(keyFile);
 
-    FILE * pFile;
+    FILE *pFile;
     long lSize1;
-    char* buffer1;
+    char *buffer1;
     size_t result1;
 
     pFile = fopen(passPath, "rb");
-    if(pFile == NULL) {
+    if (pFile == NULL) {
         cout << "Invalid file! Creating new password file...\n";
         return true;
     }
-    fseek (pFile , 0 , SEEK_END);
-    lSize1 = ftell (pFile);
-    rewind (pFile);
+    fseek(pFile, 0, SEEK_END);
+    lSize1 = ftell(pFile);
+    rewind(pFile);
 
-    buffer1 = (char*) malloc (sizeof(char)*lSize1);
-    if (buffer1 == NULL) {fputs ("Memory error",stderr); exit (2);}
-
-    result1 = fread (buffer1,1,lSize1,pFile);
-    if (result1 != lSize1) {fputs ("Reading error",stderr); exit (3);}
-    
-    
-
-    /*ifstream safe (passPath,fstream::binary);
-    if(!safe.good()) {
-        cerr << "Invalid file! Creating new password file...\n";
-        return true;
+    buffer1 = (char *) malloc(sizeof(char) * lSize1);
+    if (buffer1 == NULL) {
+        fputs("Memory error", stderr);
+        exit(2);
     }
-    safe.seekg(0, safe.end);
-    int length1 = safe.tellg();
-    safe.seekg(0, safe.beg);
-    char *buffer1 = new char[length1];
-    safe.read(buffer1, length1);*/
 
-    SafeString *passFile = new SafeString((unsigned char *)buffer1, (unsigned int)strlen(buffer1));
+    result1 = fread(buffer1, 1, (size_t) lSize1, pFile);
+    if (result1 != lSize1) {
+        fputs("Reading error", stderr);
+        exit(3);
+    }
+
+    SafeString *passFile = new SafeString((unsigned char *) buffer1,
+                                          (unsigned int) lSize1);
     storage->load(passFile);
     return true;
 }
 
-void diskStorage::genKey(char *keyPath){
+void diskStorage::genKey(char *keyPath) {
     SafeString *key = Storage::generate_key();
     string keyData = key->get_data();
-    /*ofstream passKey;
-    passKey.open(keyPath, ios::out | ios::binary);
-    passKey.write( (char*)keyData.data(), keyData.length());
-    passKey.close();*/
 
-    FILE * pFile;
+    FILE *pFile;
     pFile = fopen(keyPath, "wb");
-    fwrite (keyData.c_str() , sizeof(char), sizeof(keyData.c_str()), pFile);
-    fclose (pFile);
+    fwrite(keyData.c_str(), sizeof(char), sizeof(keyData.c_str()), pFile);
+    fclose(pFile);
     return;
 }
 
-void diskStorage::Menu(){
+void diskStorage::Menu() {
     int choice = 0;
     cout << "You're in! What would you like to do in your password safe?\n";
     do {
@@ -198,6 +181,6 @@ void diskStorage::Menu(){
                 cout << "Goodbye!\n";
                 break;
         }
-    }while(choice!=0);
+    } while (choice != 0);
     return;
 }
