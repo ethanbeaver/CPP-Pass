@@ -26,23 +26,50 @@ void diskStorage::retrievePasswords() {
     //Storage *storage;
     vector<entry> entries;
     entries = storage->list();
-    cout << "Now it's time to view your passwords.\n";
-    cout << "Here's a list of the titles:\n";
+    cout << "Here's a list of the titles of all the entries in the password manager:\n";
     for (unsigned i = 0; i < entries.size(); i++) {
         // See if there's a match in the title
         cout << i << ": " << entries[i].title->get_data() << endl;
     }
-    cout << "Enter the number corresponding of the entry you'd like to see: ";
+    cout << "You're now viewing passwords. Choose an option\n";
     unsigned int select;
-    cin >> select;
-    if (select < entries.size()) {
-        cout << "Title: " << entries[select].title->get_data() << endl;
-        cout << "Username: " << entries[select].username->get_data() << endl;
-        cout << "Password: " << entries[select].password->get_data() << endl;
-
-    } else {
-        cout << "Invalid index!\n";
-    }
+    int dnum;
+    int choice;
+    do {
+        cout << "(1. View the titles of all entries, 2. View an entry, 3. Delete an entry, 0.Back): ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                cout << "Here's a list of the titles:\n";
+                for (unsigned i = 0; i < entries.size(); i++) {
+                    // See if there's a match in the title
+                    cout << i << ": " << entries[i].title->get_data() << endl;
+                }
+                break;
+            case 2:
+                cout << "Enter the number corresponding to the entry you'd like to see: ";
+                cin >> select;
+                if (select < entries.size() && select>0) {
+                    cout << "Title: " << entries[select].title->get_data() << endl;
+                    cout << "Username: " << entries[select].username->get_data() << endl;
+                    cout << "Password: " << entries[select].password->get_data() << endl;
+                } else {
+                    cout << "Invalid index!\n";
+                }
+                break;
+            case 3:
+                cout << "Which entry would you like to delete?(Enter -1 to abort) \n";
+                cin >> dnum;
+                if(dnum >= 0 && dnum <entries.size()) {
+                    storage->remove(&entries[dnum]);
+                    return; //Don't remove this return. Bad things happen if you do.
+                }
+                break;
+            default:
+                cout << "Goodbye!\n";
+                break;
+        }
+    } while (choice != 0);
     return;
 }
 
@@ -65,6 +92,9 @@ void diskStorage::inputPasswords() {
     site.password = new SafeString(pass);*/
 
     storage->create(&site);
+    memset(t,'-',100);
+    memset(user,'-',100);
+    memset(pass,'-',100);
     return;
 }
 
@@ -150,6 +180,8 @@ bool diskStorage::readFromFile(char *keyPath, char *passPath) {
     SafeString *passFile = new SafeString((unsigned char *) buffer1,
                                           (unsigned int) lSize1);
     storage->load(passFile);
+    memset(buffer1, '-', lSize1);
+    memset(buffer2,'-',lSize);
     return true;
 }
 
@@ -159,7 +191,7 @@ void diskStorage::genKey(char *keyPath) {
 
     FILE *pFile;
     pFile = fopen(keyPath, "wb");
-    fwrite(keyData.c_str(), sizeof(char), sizeof(keyData.c_str()), pFile);
+    fwrite(keyData.c_str(), sizeof(char), keyData.length(), pFile);
     fclose(pFile);
     return;
 }
@@ -168,7 +200,7 @@ void diskStorage::Menu() {
     int choice = 0;
     cout << "You're in! What would you like to do in your password safe?\n";
     do {
-        cout << "(1. View a password, 2.Enter a password, 0.Exit): ";
+        cout << "(1. View/remove passwords, 2.Enter a password, 0.Exit): ";
         cin >> choice;
         switch (choice) {
             case 1:
