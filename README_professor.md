@@ -8,7 +8,7 @@ Admission of Fault
 
 This section is intended only for the professor.
 
-Ok, so there is actually one vulnerability, and we blame Ethan and Andy for this one. Plain text strings are never cleared, which means they can be snooped on either by segfault core dump or memory dump from root.
+Ok, so there is actually one vulnerability, and we blame Ethan and Andy for this one. Plain text strings(in a couple functions) are never cleared, which means they can be snooped on either by segfault core dump or memory dump from root.
 
 While memory dumps are a concern, the user needs the key file to open the safe in the first place. It's an attack that must be carried out while having already opened the safe. As a result, we don't see this attack vector as a big issue.
 
@@ -32,5 +32,13 @@ Contributions
 Wrote all documentation and security-related code, such as Storage and SafeString. Also set up environment and IDE settings.
 
 **Ethan Beaver:**
+
+   I wrote the entirety of main.cpp, disk_storage.cpp, and disk_storage.h. So, basically I wrote the User Interface and the writing to and from files. Functionality of each of the files are as follows:
+   main:
+    - Parsing of user inputs from the command line.
+    - Redirecting to appropriate functions
+   disk_storage:
+    - Securely writing to and from files
+    - User interface options
 
 **Quillan Jacobson:**
