@@ -26,7 +26,6 @@ Storage::~Storage() {
 
 void Storage::load(SafeString *ss) {
     string s = decrypt(this->key, ss)->get_data();
-
     // Ensure the length isn't entirely invalid
     if (s.length() < SHA512_DIGEST_LENGTH)
         throw new runtime_error("Safe file is too short");
@@ -99,7 +98,6 @@ SafeString *Storage::save() {
 
     oss << string((char *) digest, SHA512_DIGEST_LENGTH);
     s = oss.str();
-
     // Bundle and return the entries
     return encrypt(this->key, new SafeString(s));
 }

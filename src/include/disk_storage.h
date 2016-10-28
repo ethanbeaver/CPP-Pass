@@ -13,20 +13,20 @@ class diskStorage {
 public:
 
     /**
-     * Retrieve Passwords
+     * Retrieve Passwords and display them
      */
-    string retrievePasswords(string keyPath, string passPath);
+    void retrievePasswords();
 
     /**
-     * Input Passwords
+     * Input Passwords and store them in a safe
      */
-    void inputPasswords(SafeString *pass);
+    void inputPasswords();
 
     /**
      * Write the password safe to a file
      *
      */
-    bool writeToFile(Storage *storage, string passPath);
+    bool writeToFile(string passPath);
 
     /**
      * Read a password safe from a file
@@ -34,6 +34,13 @@ public:
      */
     bool readFromFile(string keyPath, string passPath);
 
+    /**
+     * Generate a key file for the user to use!
+     *
+     */
+    void genKey(string keyPath);
+
+    void Menu();
 private:
     Storage *storage;
 };
