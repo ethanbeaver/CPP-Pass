@@ -31,7 +31,7 @@ void diskStorage::retrievePasswords() {
         // See if there's a match in the title
         cout << i << ": " << entries[i].title->get_data() << endl;
     }
-    cout << "You're now viewing passwords. Choose an option\n";
+    cout << "\nYou're now viewing passwords. Choose an option\n";
     unsigned int select;
     int dnum;
     int choice;
@@ -78,9 +78,10 @@ void diskStorage::inputPasswords() {
     char *t = new char[100];
     char *user = new char[100];
     cout << "Title: ";
-    cin >> t;
+    cin.ignore (std::numeric_limits<std::streamsize>::max(), '\n');
+    cin.getline(t, 100);
     cout << "Username: ";
-    cin >> user;
+    cin.getline(user, 100);
     char *pass = new char[100];
     pass = getpass("Password: ");
 /*    SafeString pass((unsigned char *)password, (unsigned int)strlen(password));
