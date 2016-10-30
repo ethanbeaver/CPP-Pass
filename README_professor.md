@@ -48,5 +48,5 @@ _disk_storage_:
 **Quillan Jacobson:**
     
 - Assisted in conceiving project idea
-- Reviewed written code and fucntion
-- Offered what support i could when writing
+- Reviewed written code and function
+- Offered what support I could when writing
